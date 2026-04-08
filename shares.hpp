@@ -8,7 +8,6 @@
 #include <utility>
 #include <boost/asio/awaitable.hpp>
 
-#include "types.hpp"
 #include "network.hpp"
 
 using boost::asio::awaitable;

@@ -2,7 +2,7 @@
 #ifndef MPCOPS_HPP
 #define MPCOPS_HPP
 #pragma once
-#include <bsd/stdlib.h>   // must come before any template using arc4random_buf
+#include <stdlib.h>   // must come before any template using arc4random_buf
 #include <cstdint>
 #include <boost/asio.hpp>
 
@@ -12,6 +12,12 @@
 #include <iostream>
 #include <random>
 #include <stdexcept>
+//#include <openssl/aes.h>
+
+// Dummy AES_KEY for compilation
+struct AES_KEY {
+    uint64_t dummy;
+};
  
 #include "prg.hpp"
 using boost::asio::awaitable;
@@ -61,11 +67,11 @@ inline boost::asio::awaitable<T> mpc_dotproduct(
         std::vector<T> X0(x.vals.size()), X1(x.vals.size());
         std::vector<T> Y0(y.vals.size()), Y1(y.vals.size());
 
-        __m128i seed_X0, seed_X1, seed_Y0, seed_Y1;
-        arc4random_buf(&seed_X0, sizeof(__m128i));
-        arc4random_buf(&seed_X1, sizeof(__m128i));
-        arc4random_buf(&seed_Y0, sizeof(__m128i));
-        arc4random_buf(&seed_Y1, sizeof(__m128i));
+        uint64_t seed_X0, seed_X1, seed_Y0, seed_Y1;
+        arc4random_buf(&seed_X0, sizeof(uint64_t));
+        arc4random_buf(&seed_X1, sizeof(uint64_t));
+        arc4random_buf(&seed_Y0, sizeof(uint64_t));
+        arc4random_buf(&seed_Y1, sizeof(uint64_t));
 
         crypto::fill_vector_with_prg(X0, key, seed_X0);
         crypto::fill_vector_with_prg(X1, key, seed_X1);
@@ -100,7 +106,7 @@ inline boost::asio::awaitable<T> mpc_dotproduct(
         NetPeer& peer = *peer_ptr;
         AES_KEY key;
 
-        __m128i seed_X0, seed_Y0;
+        uint64_t seed_X0, seed_Y0;
         T gamma0;
         //co_await ((self >> seed_X0) && (self >> seed_Y0) && (self >> gamma0));
         co_await (self >> seed_X0);
@@ -137,7 +143,7 @@ inline boost::asio::awaitable<T> mpc_dotproduct(
         NetPeer& peer = *peer_ptr;
         AES_KEY key;
 
-        __m128i seed_X1, seed_Y1;
+        uint64_t seed_X1, seed_Y1;
         T gamma1;
         
         //co_await ((self >> seed_X1) && (self >> seed_Y1) && (self >> gamma1));
